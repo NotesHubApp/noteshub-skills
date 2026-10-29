@@ -61,7 +61,9 @@ EXACT=1 bash dev/smoke_test.sh                            # + load outputs in re
 NOTESHUB_SRC=/path/to/noteshub/src bash dev/smoke_test.sh # + cross-check kanban.py against the app
 ```
 
-`claude plugin validate --strict .` checks the plugin and marketplace manifests.
+`claude plugin validate .` checks the plugin and marketplace manifests. The plugin has no
+`version` on purpose: every commit to `main` is a new version, so installs that sync or
+auto-update pick up each push. (The validator's "No version specified" warning is expected.)
 
 ## License
 
