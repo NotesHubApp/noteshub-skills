@@ -1,0 +1,8 @@
+node_modules/
+__pycache__/
+*.pyc
+*.tmp-noteshub
+dev/crosscheck/boardUtils.bundle.mjs
+dev/out/
+.DS_Store
+dev/crosscheck/package-lock.json

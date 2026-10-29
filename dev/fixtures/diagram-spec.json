@@ -1,0 +1,11 @@
+[
+  {"type":"cameraUpdate","width":800,"height":600,"x":0,"y":0},
+  {"type":"text","id":"title","x":100,"y":20,"text":"NotesHub sync","fontSize":28},
+  {"type":"rectangle","id":"app","x":100,"y":100,"width":180,"height":80,"backgroundColor":"#a5d8ff","label":{"text":"NotesHub app","fontSize":20}},
+  {"type":"ellipse","id":"gh","x":420,"y":90,"width":180,"height":100,"backgroundColor":"#b2f2bb","fillStyle":"hachure","label":"GitHub repo"},
+  {"type":"diamond","id":"agent","x":260,"y":260,"width":200,"height":120,"backgroundColor":"#ffd8a8","label":{"text":"Claude agent with a long label that wraps","fontSize":16}},
+  {"type":"arrow","id":"a1","from":"app","to":"gh","label":"push / pull"},
+  {"type":"arrow","id":"a2","from":"agent","to":"gh","strokeStyle":"dashed","label":{"text":"API edits","fontSize":14}},
+  {"type":"arrow","id":"a3","from":"gh","to":"app","startBinding":{"elementId":"gh","fixedPoint":[0.5,1]},"endBinding":{"elementId":"app","fixedPoint":[0.5,1]},"endArrowhead":"triangle"},
+  {"type":"line","id":"l1","x":100,"y":420,"points":[[0,0],[500,0]],"strokeColor":"#868e96"}
+]

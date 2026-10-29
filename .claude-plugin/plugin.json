@@ -1,0 +1,11 @@
+{
+  "name": "noteshub",
+  "displayName": "NotesHub",
+  "version": "0.1.0",
+  "description": "Read and edit NotesHub notebooks: Markdown notes, Kanban boards (.kanban.md) and Excalidraw whiteboards (.excalidraw.svg), synced via Git/GitHub, iCloud or the file system.",
+  "author": { "name": "NotesHub", "url": "https://noteshub.app" },
+  "homepage": "https://noteshub.app",
+  "repository": "https://github.com/NotesHubApp/noteshub-skills",
+  "license": "MIT",
+  "keywords": ["noteshub", "notes", "markdown", "kanban", "excalidraw", "whiteboard", "second-brain"]
+}

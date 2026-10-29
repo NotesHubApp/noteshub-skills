@@ -1,0 +1,3 @@
+[ {"type":"rectangle","id":"phone","x":700,"y":100,"width":160,"height":80,"label":"Phone"},
+  {"type":"arrow","id":"a4","from":"phone","to":"gh"},
+  {"type":"delete","ids":"l1,a2"} ]

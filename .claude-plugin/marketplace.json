@@ -1,0 +1,12 @@
+{
+  "name": "noteshub-skills",
+  "description": "Agent skills for NotesHub notebooks",
+  "owner": { "name": "NotesHub", "url": "https://noteshub.app" },
+  "plugins": [
+    {
+      "name": "noteshub",
+      "source": "./",
+      "description": "Read and edit NotesHub notes, Kanban boards and Excalidraw whiteboards"
+    }
+  ]
+}
