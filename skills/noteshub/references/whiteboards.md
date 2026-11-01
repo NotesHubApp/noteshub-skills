@@ -59,7 +59,8 @@ short readable `id` (`"api"`, `"db"`, `"a1"`) so arrows and later edits can refe
 ```json
 {"type": "text", "id": "title", "x": 100, "y": 20, "text": "Architecture", "fontSize": 28}
 ```
-`x`,`y` is the top-left corner. Width ≈ `len(text) × fontSize × 0.55`.
+`x`,`y` is the top-left corner. Width ≈ `len(text) × fontSize × 0.55` when planning a layout
+(more for capitals and digits); `whiteboard.py` stores the width from the font's real metrics.
 
 **Frame**: `{"type": "frame", "id": "f1", "x": 0, "y": 0, "width": 800, "height": 500, "name": "v2"}`.
 

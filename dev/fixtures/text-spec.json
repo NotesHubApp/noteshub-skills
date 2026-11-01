@@ -1,0 +1,21 @@
+[
+  {"type": "text", "id": "title", "x": 0, "y": 0, "fontSize": 30, "text": "What happens when you ask your agent to change a note"},
+  {"type": "text", "id": "notes", "x": 0, "y": 60, "fontSize": 20, "text": "Short line\nDeploy the TODO list to GitHub on 2026-11-03, then close #42\nAnother short line"},
+  {"type": "text", "id": "right", "x": 0, "y": 160, "fontSize": 20, "textAlign": "right", "text": "Right-aligned: UPDATE THE ROADMAP"},
+  {"type": "rectangle", "id": "box", "x": 0, "y": 220, "width": 200, "height": 80, "label": "Deploy the TODO list to GitHub on 2026-11-03"},
+  {"type": "rectangle", "id": "word", "x": 420, "y": 220, "width": 100, "height": 60, "label": "NOTESHUB_RENDER_CACHE"},
+  {"type": "rectangle", "id": "mono", "x": 800, "y": 220, "width": 200, "height": 80, "label": {"text": "wrap this label by the width of the code font", "fontFamily": "code"}},
+  {"type": "ellipse", "id": "oval", "x": 0, "y": 360, "width": 240, "height": 120, "label": "Review 2026 GitHub Issues"},
+  {"type": "diamond", "id": "gem", "x": 300, "y": 360, "width": 280, "height": 160, "label": "OK to Deploy?"},
+  {"type": "arrow", "id": "link", "from": "box", "to": "word", "label": "Uses TODO #42"},
+  {"type": "text", "id": "virgil", "x": 0, "y": 540, "fontSize": 20, "fontFamily": "virgil", "text": "Virgil: The Quick Brown Fox, 0123456789"},
+  {"type": "text", "id": "helvetica", "x": 0, "y": 570, "fontSize": 20, "fontFamily": "helvetica", "text": "Helvetica: The Quick Brown Fox, 0123456789"},
+  {"type": "text", "id": "code", "x": 0, "y": 600, "fontSize": 20, "fontFamily": "code", "text": "Cascadia: The Quick Brown Fox, 0123456789"},
+  {"type": "text", "id": "nunito", "x": 0, "y": 630, "fontSize": 20, "fontFamily": "nunito", "text": "Nunito: The Quick Brown Fox, 0123456789"},
+  {"type": "text", "id": "lilita", "x": 0, "y": 660, "fontSize": 20, "fontFamily": "lilita", "text": "Lilita: The Quick Brown Fox, 0123456789"},
+  {"type": "text", "id": "comic", "x": 0, "y": 690, "fontSize": 20, "fontFamily": "comic", "text": "Comic Shanns: The Quick Brown Fox, 0123456789"},
+  {"type": "text", "id": "liberation", "x": 0, "y": 720, "fontSize": 20, "fontFamily": "liberation", "text": "Liberation: The Quick Brown Fox, 0123456789"},
+  {"type": "text", "id": "accents", "x": 0, "y": 760, "fontSize": 20, "text": "Déjà vu: la crème brûlée à São Paulo, Über Größe"},
+  {"type": "text", "id": "cyrillic", "x": 0, "y": 790, "fontSize": 20, "text": "Что происходит, когда вы просите агента изменить заметку"},
+  {"type": "text", "id": "symbols", "x": 0, "y": 820, "fontSize": 20, "text": "Agent → Script — Whiteboard… “quoted” • ✓ done"}
+]

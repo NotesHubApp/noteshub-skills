@@ -35,6 +35,7 @@ import string
 import subprocess
 import sys
 import time
+import unicodedata
 import zlib
 from xml.sax.saxutils import escape as _xml_escape
 
@@ -61,6 +62,50 @@ BOUND_TEXT_PADDING = 5
 FONT_NAMES = {"excalifont": 5, "virgil": 1, "hand": 5, "handwritten": 5, "helvetica": 2,
               "normal": 6, "nunito": 6, "sans": 6, "code": 3, "cascadia": 3, "mono": 3,
               "lilita": 7, "comic": 8, "liberation": 9}
+
+# Advance widths of printable ASCII (space through ~) in 1/1000 em, rounded up, by Excalidraw
+# font id. Generated from the font files Excalidraw ships: `node dev/font_metrics.mjs table`.
+_ASCII_WIDTHS = {
+    1: (  # Virgil
+        500, 296, 328, 797, 803, 939, 719, 266, 415, 338, 516, 625, 257, 411, 274, 500,
+        688, 271, 712, 681, 640, 618, 640, 538, 765, 609, 242, 258, 605, 617, 485, 466,
+        805, 656, 727, 644, 780, 674, 574, 789, 551, 545, 634, 613, 599, 766, 644, 726,
+        661, 705, 678, 608, 804, 714, 517, 746, 598, 516, 797, 491, 500, 500, 544, 826,
+        437, 667, 508, 502, 569, 547, 486, 501, 494, 219, 328, 487, 263, 633, 467, 554,
+        493, 546, 430, 543, 565, 568, 523, 609, 562, 469, 572, 573, 168, 496, 841),
+    3: (586,) * 95,  # Cascadia
+    5: (  # Excalifont
+        400, 314, 371, 783, 721, 928, 718, 218, 441, 402, 525, 550, 257, 411, 274, 561,
+        664, 427, 700, 608, 585, 618, 640, 558, 636, 629, 264, 298, 550, 550, 550, 466,
+        829, 676, 761, 629, 780, 707, 661, 780, 573, 545, 569, 613, 543, 766, 632, 767,
+        698, 768, 736, 622, 857, 730, 592, 786, 628, 564, 832, 472, 589, 497, 510, 670,
+        600, 576, 555, 504, 605, 537, 497, 555, 567, 244, 328, 533, 225, 663, 526, 600,
+        537, 539, 412, 543, 553, 548, 525, 693, 591, 530, 572, 504, 299, 544, 669),
+    6: (  # Nunito
+        261, 233, 405, 600, 600, 933, 701, 226, 326, 326, 451, 600, 233, 427, 233, 290,
+        600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 233, 233, 600, 600, 600, 447,
+        947, 733, 679, 675, 747, 586, 551, 729, 764, 262, 331, 634, 548, 858, 741, 771,
+        637, 771, 673, 618, 607, 731, 694, 1104, 655, 601, 593, 324, 290, 324, 600, 500,
+        361, 533, 587, 465, 587, 534, 340, 590, 572, 237, 241, 508, 301, 861, 572, 560,
+        587, 587, 365, 483, 358, 565, 518, 844, 530, 517, 466, 361, 270, 361, 600),
+    7: (  # Lilita One
+        188, 287, 460, 833, 531, 798, 667, 301, 430, 422, 557, 602, 305, 525, 229, 573,
+        639, 406, 525, 528, 598, 524, 575, 500, 570, 565, 277, 277, 484, 580, 450, 584,
+        867, 655, 594, 561, 616, 493, 472, 621, 644, 429, 462, 620, 435, 907, 648, 696,
+        570, 706, 590, 531, 502, 628, 661, 953, 683, 615, 563, 385, 587, 385, 687, 636,
+        350, 517, 520, 424, 565, 486, 375, 516, 501, 273, 271, 531, 272, 788, 551, 513,
+        555, 511, 396, 450, 368, 544, 521, 752, 557, 537, 454, 362, 628, 362, 459),
+    8: (550,) * 95,  # Comic Shanns
+    9: (  # Liberation Sans
+        278, 278, 355, 557, 557, 890, 667, 191, 333, 333, 390, 584, 278, 333, 278, 278,
+        557, 557, 557, 557, 557, 557, 557, 557, 557, 557, 278, 278, 584, 584, 584, 557,
+        1016, 667, 667, 723, 723, 667, 611, 778, 723, 278, 500, 667, 557, 833, 723, 778,
+        667, 778, 723, 667, 611, 723, 667, 944, 667, 667, 611, 278, 278, 278, 470, 557,
+        333, 557, 557, 500, 557, 557, 278, 557, 557, 223, 223, 500, 223, 833, 557, 557,
+        557, 557, 333, 500, 278, 557, 500, 723, 500, 500, 500, 334, 260, 334, 584),
+}
+_ASCII_WIDTHS[2] = _ASCII_WIDTHS[9]   # Helvetica ships no font file; Liberation Sans has its metrics
+TEXT_WIDTH_MARGIN = 1.02              # covers positive kerning, the one thing a sum of widths misses
 
 SHAPES = ("rectangle", "ellipse", "diamond")
 LINEAR = ("arrow", "line")
@@ -211,34 +256,38 @@ def _font_id(value):
     return FONT_NAMES.get(str(value).lower(), DEFAULT_FONT)
 
 
-def _char_width(ch):
-    if ch in "il.,:;'|!`ijlI1()[]{} ":
-        return 0.32
-    if ch in "mwMW@%":
-        return 0.85
-    if ch.isupper():
-        return 0.66
-    if ord(ch) >= 0x2E80:          # CJK and other wide scripts
+def _char_width(ch, widths):
+    """Width of one character in em, from an _ASCII_WIDTHS table."""
+    base = unicodedata.normalize("NFD", ch)[0]     # accented Latin is as wide as its base letter
+    if " " <= base <= "~":
+        return widths[ord(base) - 32] / 1000.0
+    if unicodedata.combining(ch):
+        return 0.0
+    # No metrics for the rest, so stay on the wide side: symbols (arrows, dashes) and CJK take
+    # up to a full em, other scripts a little more than their usual width.
+    if 0x2000 <= ord(ch) < 0x2C00 or ord(ch) >= 0x2E80:
         return 1.0
-    return 0.55
+    return 0.78 if ch.isupper() else 0.62
 
 
 def measure_text(text, font_size, font_id=DEFAULT_FONT):
-    """Approximate Excalidraw's measurement (good enough; Excalidraw re-measures on open)."""
+    """Size of `text` as Excalidraw measures it. Excalidraw keeps these numbers on open (it only
+    re-measures a text when it's edited) and clips what overflows the width, so err wide."""
+    widths = _ASCII_WIDTHS.get(font_id, _ASCII_WIDTHS[DEFAULT_FONT])
     lines = text.split("\n")
-    width = max(sum(_char_width(c) for c in line) for line in lines) * font_size
+    width = max(sum(_char_width(c, widths) for c in line) for line in lines) * font_size * TEXT_WIDTH_MARGIN
     height = len(lines) * font_size * LINE_HEIGHTS.get(font_id, 1.25)
     return width, height
 
 
-def wrap_text(text, max_width, font_size):
-    """Word-wrap text to max_width (approximate), keeping explicit newlines."""
+def wrap_text(text, max_width, font_size, font_id=DEFAULT_FONT):
+    """Word-wrap text to max_width, keeping explicit newlines."""
     out = []
     for para in text.split("\n"):
         words, line = para.split(" "), ""
         for w in words:
             cand = w if not line else line + " " + w
-            if line and measure_text(cand, font_size)[0] > max_width:
+            if line and measure_text(cand, font_size, font_id)[0] > max_width:
                 out.append(line)
                 line = w
             else:
@@ -279,7 +328,7 @@ def _fit_label(container, label_spec):
     # Inner box available for text (ellipses/diamonds have less room).
     shrink = {"rectangle": 1.0, "ellipse": 0.7071, "diamond": 0.5}[container["type"]]
     max_w = max(container["width"] * shrink - 2 * BOUND_TEXT_PADDING, font_size)
-    wrapped = wrap_text(t["originalText"], max_w, font_size)
+    wrapped = wrap_text(t["originalText"], max_w, font_size, font_id)
     w, h = measure_text(wrapped, font_size, font_id)
     if w > max_w:
         container["width"] = (w + 2 * BOUND_TEXT_PADDING) / shrink
@@ -368,7 +417,7 @@ def relayout_text(t, container=None, by_id=None):
     if container is not None and container["type"] in SHAPES:
         shrink = {"rectangle": 1.0, "ellipse": 0.7071, "diamond": 0.5}[container["type"]]
         max_w = max(container["width"] * shrink - 2 * BOUND_TEXT_PADDING, font_size)
-        wrapped = wrap_text(original, max_w, font_size)
+        wrapped = wrap_text(original, max_w, font_size, font_id)
         w, h = measure_text(wrapped, font_size, font_id)
         cx0, cy0 = _center(container)
         old_size = (container["width"], container["height"])
