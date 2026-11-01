@@ -1121,11 +1121,16 @@ def cmd_apply(a):
     for e in scene["elements"]:
         prev = old_by_id.get(e.get("id"))
         if e.get("type") == "text":
-            # Keep text/originalText in sync and re-measure when the wording changed.
-            if prev is None or e.get("text") != prev.get("text") or e.get("originalText") != prev.get("originalText"):
+            # Keep text/originalText in sync and re-measure when the wording or the font changed.
+            reworded = prev is None or e.get("text") != prev.get("text") or e.get("originalText") != prev.get("originalText")
+            restyled = prev is not None and any(e.get(k) != prev.get(k) for k in ("fontSize", "fontFamily"))
+            if reworded:
                 if prev is not None and e.get("originalText") == prev.get("originalText"):
                     e["originalText"] = e.get("text", "")
                 e.setdefault("originalText", e.get("text", ""))
+            if restyled:
+                e["lineHeight"] = LINE_HEIGHTS.get(e.get("fontFamily"), 1.25)
+            if reworded or restyled:
                 relayout_text(e, by_id.get(e.get("containerId")), by_id)
         if prev is not None and prev != e:
             e["version"] = max(e.get("version", 1), prev.get("version", 1)) + 1

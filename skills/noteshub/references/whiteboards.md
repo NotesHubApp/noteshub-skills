@@ -95,9 +95,9 @@ Excalidraw's MCP can be passed through as-is.
   Excalidraw syncs; don't strip them.
 - **Anything else** (move, recolor, resize, restyle): `decode -o scene.json`, edit the
   elements, `apply --scene scene.json`. `apply` bumps element versions, keeps `text` and
-  `originalText` in sync, re-measures changed text, moves labels with their shapes and keeps
-  bound arrows attached to moved/resized shapes. Don't change `id`s; don't touch `files`
-  (embedded images) or `index` unless you know why.
+  `originalText` in sync, re-measures text whose wording or font changed, moves labels with
+  their shapes and keeps bound arrows attached to moved/resized shapes. Don't change `id`s;
+  don't touch `files` (embedded images) or `index` unless you know why.
 - Freehand drawings (`freedraw`) and images are preserved but can't be created here.
 
 ## The preview

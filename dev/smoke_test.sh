@@ -71,6 +71,32 @@ assert els["word"]["width"] >= 299.02, els["word"]["width"]
 EOF
 $W set-label text.excalidraw.svg --id mono --text 'wrap this other label by the code font width too'
 $W info text.excalidraw.svg | grep -q 'rectangle mono "wrap this other label by the code font width too" at (800, [0-9.]*) 200x'
+$W decode text.excalidraw.svg -o text-restyle.json
+python3 - <<'EOF'
+import json
+s = json.load(open("text-restyle.json"))
+els = {e["id"]: e for e in s["elements"]}
+els["title"]["fontSize"] = 60
+els["notes"]["fontFamily"] = 3
+els[next(b["id"] for b in els["box"]["boundElements"] if b["type"] == "text")]["fontSize"] = 30
+json.dump(s, open("text-restyle.json", "w"))
+EOF
+$W apply text.excalidraw.svg --scene text-restyle.json
+$W decode text.excalidraw.svg -o text-restyle.json
+python3 - <<'EOF'
+import json
+els = {e["id"]: e for e in json.load(open("text-restyle.json"))["elements"]}
+# Restyling through apply re-measures too: the title at twice the size, the notes in Cascadia...
+assert 1680.3 <= els["title"]["width"] <= 1680.3 * 1.03, els["title"]["width"]
+assert els["title"]["height"] == 75, els["title"]["height"]
+assert 703.13 <= els["notes"]["width"] <= 703.13 * 1.03, els["notes"]["width"]
+assert els["notes"]["lineHeight"] == 1.2 and els["notes"]["height"] == 72, els["notes"]["height"]
+# ...and a bigger label rewraps, keeps its wording and still fits its shape.
+box = els["box"]
+label = els[next(b["id"] for b in box["boundElements"] if b["type"] == "text")]
+assert label["originalText"] == "Deploy the TODO list to GitHub on 2026-11-03" and "\n" in label["text"]
+assert label["width"] + 10 <= box["width"] and label["height"] + 10 <= box["height"], label["text"]
+EOF
 
 if [[ "${EXACT:-}" == "1" ]]; then
   echo "== real Excalidraw (loadFromBlob + exportToSvg)"
