@@ -57,8 +57,9 @@ Scripts need Python 3.8+ (standard library only) and `git`; `gh` and Node.js are
 
 ```bash
 bash dev/smoke_test.sh                                    # Python checks
-EXACT=1 bash dev/smoke_test.sh                            # + load outputs in real Excalidraw
+EXACT=1 bash dev/smoke_test.sh                            # + load outputs in real Excalidraw, measure their text
 NOTESHUB_SRC=/path/to/noteshub/src bash dev/smoke_test.sh # + cross-check kanban.py against the app
+node dev/font_metrics.mjs table                           # reprint whiteboard.py's font width table
 ```
 
 `claude plugin validate .` checks the plugin and marketplace manifests. The plugin has no

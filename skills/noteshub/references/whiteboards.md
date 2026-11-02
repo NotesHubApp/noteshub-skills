@@ -59,7 +59,8 @@ short readable `id` (`"api"`, `"db"`, `"a1"`) so arrows and later edits can refe
 ```json
 {"type": "text", "id": "title", "x": 100, "y": 20, "text": "Architecture", "fontSize": 28}
 ```
-`x`,`y` is the top-left corner. Width ≈ `len(text) × fontSize × 0.55`.
+`x`,`y` is the top-left corner. Width ≈ `len(text) × fontSize × 0.55` when planning a layout
+(more for capitals and digits); `whiteboard.py` stores the width from the font's real metrics.
 
 **Frame**: `{"type": "frame", "id": "f1", "x": 0, "y": 0, "width": 800, "height": 500, "name": "v2"}`.
 
@@ -94,9 +95,9 @@ Excalidraw's MCP can be passed through as-is.
   Excalidraw syncs; don't strip them.
 - **Anything else** (move, recolor, resize, restyle): `decode -o scene.json`, edit the
   elements, `apply --scene scene.json`. `apply` bumps element versions, keeps `text` and
-  `originalText` in sync, re-measures changed text, moves labels with their shapes and keeps
-  bound arrows attached to moved/resized shapes. Don't change `id`s; don't touch `files`
-  (embedded images) or `index` unless you know why.
+  `originalText` in sync, re-measures text whose wording or font changed, moves labels with
+  their shapes and keeps bound arrows attached to moved/resized shapes. Don't change `id`s;
+  don't touch `files` (embedded images) or `index` unless you know why.
 - Freehand drawings (`freedraw`) and images are preserved but can't be created here.
 
 ## The preview
