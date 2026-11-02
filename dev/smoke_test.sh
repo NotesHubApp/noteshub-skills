@@ -79,6 +79,7 @@ els = {e["id"]: e for e in s["elements"]}
 els["title"]["fontSize"] = 60
 els["notes"]["fontFamily"] = 3
 els[next(b["id"] for b in els["box"]["boundElements"] if b["type"] == "text")]["fontSize"] = 30
+els["oval"]["width"] = 140
 json.dump(s, open("text-restyle.json", "w"))
 EOF
 $W apply text.excalidraw.svg --scene text-restyle.json
@@ -96,6 +97,20 @@ box = els["box"]
 label = els[next(b["id"] for b in box["boundElements"] if b["type"] == "text")]
 assert label["originalText"] == "Deploy the TODO list to GitHub on 2026-11-03" and "\n" in label["text"]
 assert label["width"] + 10 <= box["width"] and label["height"] + 10 <= box["height"], label["text"]
+# Narrowing a shape rewraps its label without changing the wording...
+oval = els[next(b["id"] for b in els["oval"]["boundElements"] if b["type"] == "text")]
+assert oval["originalText"] == "Review 2026 GitHub Issues" and "\n" in oval["text"], oval["originalText"]
+els["oval"]["width"] = 500
+json.dump({"elements": list(els.values())}, open("text-widen.json", "w"))
+EOF
+$W apply text.excalidraw.svg --scene text-widen.json
+$W decode text.excalidraw.svg -o text-widen.json
+python3 - <<'EOF'
+import json
+els = {e["id"]: e for e in json.load(open("text-widen.json"))["elements"]}
+# ...so widening it again puts the label back on one line.
+oval = els[next(b["id"] for b in els["oval"]["boundElements"] if b["type"] == "text")]
+assert oval["text"] == oval["originalText"] == "Review 2026 GitHub Issues", oval["text"]
 EOF
 
 if [[ "${EXACT:-}" == "1" ]]; then
