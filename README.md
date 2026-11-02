@@ -10,6 +10,11 @@ NotesHub reads and writes, so nothing gets lost on the app's next save.
 > "Draw our sync architecture as a whiteboard in Projects/NotesHub"
 > "Append today's meeting notes to the Q4 planning note"
 
+The full guide is on our blog:
+[Let Claude and other AI agents manage your notes](https://about.noteshub.app/blog/archive/2026/11/noteshub-agent-skill).
+It covers setup for each agent, telling your agent where your notebooks are, examples and
+common questions.
+
 ## Install
 
 **Claude (web, desktop, mobile)** — skills need code execution turned on in Settings.
