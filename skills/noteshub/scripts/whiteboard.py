@@ -1111,18 +1111,22 @@ def cmd_apply(a):
     moved = [e for e in scene["elements"] if e.get("type") in SHAPES and e["id"] in old_by_id
              and any(e.get(k) != old_by_id[e["id"]].get(k) for k in geometry)]
     old_geoms = {e["id"]: _geom(old_by_id[e["id"]]) for e in moved}
+    rewrapped = set()
     for e in moved:
         # A moved/resized shape drags its label along and keeps attached arrows attached.
         for bnd in e.get("boundElements") or []:
             t = by_id.get(bnd.get("id"))
             if t is not None and t.get("type") == "text" and old_by_id.get(t["id"]) == t:
                 relayout_text(t, e)
+                rewrapped.add(t["id"])
         reroute_bound_arrows(e, by_id, old_geoms, skip=edited_arrows)
     for e in scene["elements"]:
         prev = old_by_id.get(e.get("id"))
         if e.get("type") == "text":
             # Keep text/originalText in sync and re-measure when the wording or the font changed.
-            reworded = prev is None or e.get("text") != prev.get("text") or e.get("originalText") != prev.get("originalText")
+            # Our own rewrap above changed only the line breaks: originalText must not pick them up.
+            reworded = e.get("id") not in rewrapped and (
+                prev is None or e.get("text") != prev.get("text") or e.get("originalText") != prev.get("originalText"))
             restyled = prev is not None and any(e.get(k) != prev.get(k) for k in ("fontSize", "fontFamily"))
             if reworded:
                 if prev is not None and e.get("originalText") == prev.get("originalText"):
